@@ -1,8 +1,16 @@
 # Maven package Java project Web App to Linux on Azure
-- task: NodeTool@0
+- task: SnykSecurityScan@1
   inputs:
-    versionSource: 'spec'
-    versionSpec: '6.x'
+    serviceConnectionEndpoint: 'snyk_api'
+    testType: 'app'
+    monitorWhen: 'always'
+    failOnIssues: true
+    projectName: '- task: SnykSecurityScan@1
+  inputs:
+    serviceConnectionEndpoint: 'snyk_api'
+    testType: 'code'
+    failOnIssues: true
+    projectName: 'test_project''
 # Build your Java project and deploy it to Azure as a Linux web app
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
