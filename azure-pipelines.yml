@@ -1,4 +1,8 @@
 # Maven package Java project Web App to Linux on Azure
+- task: NodeTool@0
+  inputs:
+    versionSource: 'spec'
+    versionSpec: '6.x'
 - task: SnykSecurityScan@1
   inputs:
     serviceConnectionEndpoint: 'snyk_api'
