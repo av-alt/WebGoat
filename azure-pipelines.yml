@@ -18,7 +18,7 @@ stages:
   - job: SnykScan
     displayName: Snyk Security Scan
     pool:
-      vmImage: $(vmImageName)
+      name: AWESELSKI-N  # Replace with your agent pool name
 
     steps:
     - checkout: self
