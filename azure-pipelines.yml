@@ -1,20 +1,7 @@
-# Maven package Java project Web App to Linux on Azure
-
-
 trigger:
 - main
 
 variables:
-
-  # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '2041b05f-4689-4287-82fb-9dea409345ac'
-
-  # Web app name
-  webAppName: 'webgoat_test'
-
-  # Environment name
-  environmentName: 'test_env'
-
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -44,5 +31,3 @@ stages:
         monitorWhen: 'always'
         failOnIssues: true
         projectName: $(snykProjectName)
-
-
