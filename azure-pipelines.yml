@@ -1,33 +1,48 @@
 trigger:
-- main
-
+  branches:
+    include:
+    - main
 variables:
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
-
-  # Service connection for Snyk
-  snykServiceConnection: 'snyk_api'  # Update this with your actual Snyk service connection name
-
-  # Project name for Snyk
-  snykProjectName: 'test_project'  # Update this with your actual project name in Snyk
-
+- name: azureSubscription
+  value: '2041b05f-4689-4287-82fb-9dea409345ac'
+- name: webAppName
+  value: 'webgoat_test'
+- name: environmentName
+  value: 'test_env'
+- name: vmImageName
+  value: 'ubuntu-latest'
 stages:
-- stage: CodeSecurityScan
-  displayName: Snyk Code Security Scan
+- stage: Build
+  displayName: Build stage
   jobs:
-  - job: SnykScan
-    displayName: Snyk Security Scan
+  - job: MavenPackageAndPublishArtifacts
+    displayName: Maven Package and Publish Artifacts
     pool:
-      name: 'Default'  # Replace with your agent pool name
-
+      name: 'Default'
     steps:
-    - checkout: self
-
-    - task: SnykSecurityScan@1
-      displayName: 'Perform Snyk Security Scan'
+    - task: Maven@3
+      displayName: 'Maven Package'
       inputs:
-        serviceConnectionEndpoint: $(snykServiceConnection)
+        mavenPomFile: 'pom.xml'
+    - task: NodeTool@0
+      inputs:
+        versionSource: 'spec'
+        versionSpec: '6.x'
+    - task: SnykSecurityScan@1
+      inputs:
+        serviceConnectionEndpoint: 'snyk_api'
         testType: 'app'
         monitorWhen: 'always'
         failOnIssues: true
-        projectName: $(snykProjectName)
+        projectName: 'test_project'
+    - task: CopyFiles@2
+      displayName: 'Copy Files to artifact staging directory'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: '**/target/*.?(war|jar)'
+        TargetFolder: $(Build.ArtifactStagingDirectory)
+    - task: ecdc45f6-832d-4ad9-b52b-ee49e94659be@0
+      inputs:
+        targetPath: $(Build.ArtifactStagingDirectory)
+        artifactName: drop
+
