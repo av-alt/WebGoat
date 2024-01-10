@@ -1,0 +1,54 @@
+trigger:
+- main
+
+variables:
+  # Azure Resource Manager connection created during pipeline creation
+  azureSubscription: '2041b05f-4689-4287-82fb-9dea409345ac'
+
+  # Web app name
+  webAppName: 'webgoat_test'
+
+  # Environment name
+  environmentName: 'test_env'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: MavenPackage
+    displayName: Maven Package
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: Maven@3
+      displayName: 'Maven Package'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'package' # Maven goal to package the application
+
+    - task: NodeTool@0
+      inputs:
+        versionSource: 'spec'
+        versionSpec: '6.x'
+
+    - task: SnykSecurityScan@1
+      inputs:
+        serviceConnectionEndpoint: 'snyk_api'
+        testType: 'app'
+        monitorWhen: 'always'
+        failOnIssues: true
+        projectName: 'test_project'
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to artifact staging directory'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: '**/target/*.?(war|jar)'
+        TargetFolder: $(Build.ArtifactStagingDirectory)
+
+    - upload: $(Build.ArtifactStagingDirectory)
+      artifact: drop
