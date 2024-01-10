@@ -18,7 +18,7 @@ stages:
   - job: SnykScan
     displayName: Snyk Security Scan
     pool:
-      name: 'AWESELSKI-N'  # Replace with your agent pool name
+      name: 'Default'  # Replace with your agent pool name
 
     steps:
     - checkout: self
