@@ -24,12 +24,6 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
-    - task: Maven@3
-      displayName: 'Maven Package'
-      inputs:
-        mavenPomFile: 'pom.xml'
-        goals: 'package' # Maven goal to package the application
-        options: '-Dmaven.test.skip=true'
 
     - task: NodeTool@0
       inputs:
@@ -44,12 +38,5 @@ stages:
         failOnIssues: true
         projectName: 'test_project'
 
-    - task: CopyFiles@2
-      displayName: 'Copy Files to artifact staging directory'
-      inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)'
-        Contents: '**/target/*.?(war|jar)'
-        TargetFolder: $(Build.ArtifactStagingDirectory)
 
-    - upload: $(Build.ArtifactStagingDirectory)
-      artifact: drop
+
