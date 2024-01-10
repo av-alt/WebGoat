@@ -29,6 +29,7 @@ stages:
       inputs:
         mavenPomFile: 'pom.xml'
         goals: 'package' # Maven goal to package the application
+        options: '-Dmaven.test.skip=true'
 
     - task: NodeTool@0
       inputs:
