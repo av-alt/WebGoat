@@ -18,44 +18,31 @@ variables:
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
+  # Service connection for Snyk
+  snykServiceConnection: 'snyk_api'  # Update this with your actual Snyk service connection name
+
+  # Project name for Snyk
+  snykProjectName: 'test_project'  # Update this with your actual project name in Snyk
 
 stages:
-- stage: Build
-  displayName: Build stage
+- stage: CodeSecurityScan
+  displayName: Snyk Code Security Scan
   jobs:
-  - job: MavenPackageAndPublishArtifacts
-    displayName: Maven Package and Publish Artifacts
+  - job: SnykScan
+    displayName: Snyk Security Scan
     pool:
       vmImage: $(vmImageName)
 
     steps:
-    - task: Maven@3
-      displayName: 'Maven Package'
-      inputs:
-        mavenPomFile: 'pom.xml'
-    - task: NodeTool@0
-      inputs:
-        versionSource: 'spec'
-        versionSpec: '6.x'
+    - checkout: self
+
     - task: SnykSecurityScan@1
+      displayName: 'Perform Snyk Security Scan'
       inputs:
-        serviceConnectionEndpoint: 'snyk_api'
+        serviceConnectionEndpoint: $(snykServiceConnection)
         testType: 'app'
         monitorWhen: 'always'
         failOnIssues: true
-        projectName: 'test_project'
-      
-# Build your Java project and deploy it to Azure as a Linux web app
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-    - task: CopyFiles@2
-      displayName: 'Copy Files to artifact staging directory'
-      inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)'
-        Contents: '**/target/*.?(war|jar)'
-        TargetFolder: $(Build.ArtifactStagingDirectory)
-
-    - upload: $(Build.ArtifactStagingDirectory)
-      artifact: drop
+        projectName: $(snykProjectName)
 
 
