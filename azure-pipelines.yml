@@ -35,6 +35,7 @@ stages:
         monitorWhen: 'always'
         failOnIssues: true
         projectName: 'test_project'
+        additionalArguments: '--json'
     - task: CopyFiles@2
       displayName: 'Copy Files to artifact staging directory'
       inputs:
